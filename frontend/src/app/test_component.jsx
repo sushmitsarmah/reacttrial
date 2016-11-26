@@ -1,4 +1,5 @@
 import React from 'react';
+import FormComponent from './form_component';
 
 function Welcome(props) {
   return <h1>Hello, {props.name}</h1>;
@@ -33,6 +34,7 @@ class TestComponent extends React.Component {
           () => this.tick(),
           1000
         );
+        // console.log(d3.select(".sushmit").attr('class'));
     }
 
     componentWillUnmount() {
@@ -55,11 +57,11 @@ class TestComponent extends React.Component {
     }
 
     render() {
-        console.log("render");
         return (
             <div className="sushmit">
                 <Welcome name="Sara" />
                 <Greeting isLoggedIn={true} />
+                <FormComponent value="sushmit"/>
                 Likes : <span>{this.state.likesCount}</span> -
                 <span> {this.state.othercount}</span>
                 <div>{this.state.date.toLocaleTimeString()}</div>
