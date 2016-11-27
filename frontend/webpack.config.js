@@ -2,17 +2,24 @@ var webpack = require('webpack');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
 var ExtractTextPlugin = require("extract-text-webpack-plugin");
 var path = require('path');
+var poststylus = require('poststylus');
+var CleanWebpackPlugin = require('clean-webpack-plugin');
 
 var DEST_DIR = path.resolve(__dirname, 'dest');
 var SRC_DIR = path.resolve(__dirname, 'src');
 
 var config = {
-    entry: SRC_DIR + '/app/index.jsx',
+    entry: { 
+        app: SRC_DIR + '/app/index.jsx',
+        vendor1: ['react','react-dom','semantic-ui-react','react-faux-dom'],
+        vendor2: ['d3','lodash','jquery']
+    },
     output: {
         path: DEST_DIR,
-        filename: 'bundle.js'
+        filename: '[name].[hash].js'
     },
     plugins: [
+        new CleanWebpackPlugin(['dest']),
         new HtmlWebpackPlugin({
             filename: 'index.html',
             template: SRC_DIR + '/index.html'
@@ -23,7 +30,18 @@ var config = {
             d3: "d3",
             "_": "lodash"
         }),
-        new ExtractTextPlugin("styles.css")      
+        new ExtractTextPlugin("[name].[hash].css"),
+        new webpack.optimize.CommonsChunkPlugin({
+            name: ['app','vendor1','vendor2']
+        }),
+        new webpack.optimize.UglifyJsPlugin({
+            compress: {
+                warnings: false
+            },
+            minimize: true,
+            sourceMap: false,
+            include: /\.min\.js$/
+        })                      
     ],
     module: {
         loaders: [
@@ -39,10 +57,20 @@ var config = {
                 loader: ExtractTextPlugin.extract("style-loader", "css-loader")
             },            
             {   test: /\.styl$/,
-                loader: ExtractTextPlugin.extract("stylus-loader", "css-loader")
+                // loader: ExtractTextPlugin.extract('style', 'css?sourceMap!stylus?sourceMap') 
+                loader: ExtractTextPlugin.extract(['css-loader','stylus-loader'])
+                // loader: ExtractTextPlugin.extract({
+                //     fallbackLoader: "css?sourceMap",
+                //     loader: "stylus?sourceMap"
+                // })
             }
         ]
     },
+    stylus: {
+      use: [
+        poststylus([ 'autoprefixer', 'rucksack-css' ])
+      ]
+    },    
     resolve: {
         extensions: ['', '.js', '.jsx', '.styl','.css']
     }      

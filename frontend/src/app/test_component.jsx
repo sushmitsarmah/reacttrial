@@ -58,7 +58,7 @@ class TestComponent extends React.Component {
 
     render() {
         return (
-            <div className="sushmit">
+            <div className="item">
                 <Welcome name="Sara" />
                 <Greeting isLoggedIn={true} />
                 <FormComponent value="sushmit"/>
